@@ -17,8 +17,4 @@ The LICENSE.txt file contains the license for this software.
 
 ## Tutorial
 
-The Tutorial.elm file contains a tutorial. You can compile it with
-Preselm as described above and then view it.
-
-You can also view it [here](http://www.grzegorzbalcerek.net/preselm/Tutorial.html).
-
+The Tutorial.elm file contains a tutorial.
