@@ -8,14 +8,15 @@ import Text
 
 -- util
 
---ithmod : Int -> [a] -> a
+ithmod : Int -> List a -> a
 ithmod n (h::t) =
     let nmod = n `mod` length (h::t)
     in  if nmod == 0
             then h
             else ithmod (nmod - 1) t
 
---isEmpty : [a] -> Bool
+
+isEmpty : List a -> Bool
 isEmpty lst = case lst of
                 [] -> True
                 _  -> False
@@ -91,9 +92,9 @@ makeContextSignal dimensions frames =
 
 ------------------------------------ FRAME BUILDERS --------------------
 
-type MaybeFrameBuilder = [Frame -> Context -> Maybe Element]
+type MaybeFrameBuilder = List (Frame -> Context -> Maybe Element)
 
-type FrameBuilder = Frame -> Context -> Element
+type alias FrameBuilder = Frame -> Context -> Element
 
 contextDebugBuilder : MaybeFrameBuilder
 contextDebugBuilder =
@@ -205,9 +206,9 @@ buildFrame frame context = layers (justs <| map (\f -> f frame context) frameBui
 
 ----------------------------- HANDLERS
 
-type HandlerSelector = Context -> Maybe ([Frame] -> Context -> Element)
+type alias HandlerSelector = Context -> Maybe (List Frame -> Context -> Element)
 
-slidingTransitionSelectors : [HandlerSelector]
+slidingTransitionSelectors : List HandlerSelector
 slidingTransitionSelectors =
     let twoFramesElement leftFrame rightFrame context = (buildFrame leftFrame context) `beside` (buildFrame rightFrame context)
         getDelta windowWidth tsic = (toFloat windowWidth) * (1 - 0.9^(tsic / 10))
@@ -235,18 +236,18 @@ slidingTransitionSelectors =
                 else Nothing
     in  [ selectLTR, selectRTL ]
 
-defaultHandlerSelector : [HandlerSelector]
+defaultHandlerSelector : List HandlerSelector
 defaultHandlerSelector =
     let showCurrentFrame frames context = buildFrame (ithmod context.currentFrameIndex frames) context
         selectShowFrame context = Just showCurrentFrame
     in [ selectShowFrame ]
 
-handlerSelectors : [HandlerSelector]
+handlerSelectors : List HandlerSelector
 handlerSelectors = concat [slidingTransitionSelectors, defaultHandlerSelector]
 
 -- presentation
 
-type Frame = { backgroundColor : Maybe Color
+type alias Frame = { backgroundColor : Maybe Color
              , column1 : Maybe Element
              , column2 : Maybe Element
              , columnWidth : Maybe Float
@@ -279,7 +280,7 @@ emptyFrame = { backgroundColor = Nothing
              , topMargin = Just 0.15
              }
 
-presentation : [Frame] -> Signal (Int, Int) -> Signal a -> (a -> Maybe Action) -> Signal Element
+presentation : List Frame -> Signal (Int, Int) -> Signal a -> (a -> Maybe Action) -> Signal Element
 presentation frames dimensions keys handle =
   let currentFrames = currentFrameIndexSignal keys handle
       context = makeContextSignal dimensions currentFrames
