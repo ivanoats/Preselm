@@ -2,20 +2,20 @@
 
 module Preselm (presentation, emptyFrame, Forward, Backward, Home, End) where
 
-import Maybe (..)
+import Maybe exposing (..)
 import Mouse
 import Text
 
 -- util
 
-ithmod : Int -> [a] -> a
+--ithmod : Int -> [a] -> a
 ithmod n (h::t) =
     let nmod = n `mod` length (h::t)
     in  if nmod == 0
             then h
             else ithmod (nmod - 1) t
 
-isEmpty : [a] -> Bool
+--isEmpty : [a] -> Bool
 isEmpty lst = case lst of
                 [] -> True
                 _  -> False
@@ -25,15 +25,16 @@ mapPair f (x, y) = (f x, f y)
 
 -- signals
 
-data Transition = NoTransition | ForwardTransition | BackwardTransition
-type FrameIndex =
+type Transition = NoTransition | ForwardTransition | BackwardTransition
+
+type alias FrameIndex =
     { current : Int
     , previous : Int
     , indexChangeTime : Time
     , transition : Transition
     }
 
-data Action = Forward | Backward | Home | End
+type Action = Forward | Backward | Home | End
 
 currentFrameIndexSignal : Signal a -> (a -> Maybe Action) -> Signal FrameIndex
 currentFrameIndexSignal keysDown handle =
@@ -54,7 +55,7 @@ timeSinceIndexChangeSignal frames = fst <~ (timestamp <| fpsWhen 60 (since secon
 
 -- context
 
-type Context =
+type alias Context =
     { windowWidth : Int
     , windowHeight : Int
     , currentFrameIndex : Int
@@ -91,6 +92,7 @@ makeContextSignal dimensions frames =
 ------------------------------------ FRAME BUILDERS --------------------
 
 type MaybeFrameBuilder = [Frame -> Context -> Maybe Element]
+
 type FrameBuilder = Frame -> Context -> Element
 
 contextDebugBuilder : MaybeFrameBuilder
